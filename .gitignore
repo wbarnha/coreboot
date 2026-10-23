@@ -49,3 +49,7 @@ tarballs/
 *~
 *.kate-swp
 *.kdev4
+
+# Private inventories produced by util/thinkpad25/collect_inventory.sh.
+/coreboot-inventory-thinkpad25.*/
+/coreboot-inventory-thinkpad25.*.tar.gz
