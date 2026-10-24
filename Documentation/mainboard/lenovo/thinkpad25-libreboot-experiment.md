@@ -213,6 +213,19 @@ now; the user has not yet tested stock boot. It does explain why the earlier
 SeaBIOS handoff to a hard-disk-class device's GRUB was not an equivalent test
 of the configured stock UEFI path.
 
+An active Lenovo OEM variable `LastBootCurrent` (record at file offset
+`0x812164`, state `0x3F`, GUID
+`0b7646a4-6b44-4332-8588-c8998117f2ef`) contains the UINT16 value `0001`,
+matching `Boot0001` Ubuntu. Older `LastBootCurrent` records for `001D` and
+`0024` are obsolete (state `0x3C`). This corroborates the Ubuntu entry but
+is not conclusive proof of the last successful boot: `LastBootCurrent` is a
+Lenovo-specific variable, not the standard `BootCurrent`. The [UEFI
+Specification 2.11 Boot Manager chapter](https://uefi.org/specs/UEFI/2.11/03_Boot_Manager.html)
+defines `BootOrder` as the default ordered list of `Boot####` options and
+`BootCurrent` as the option selected for the current boot; firmware may also
+remove invalid options. The SPI dump therefore records intended/default and
+OEM history state, not a runtime boot trace.
+
 The Ubuntu device path's GPT hard-drive node identifies partition 1 at LBA
 2048, size 2,097,152 sectors (1 GiB), PARTUUID
 `a6231196-0aac-44d7-a534-1fda8bb4279f`. The saved inventory lists the
