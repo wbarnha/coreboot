@@ -21,14 +21,14 @@ okay. A later user-supplied photograph shows:
 - USB mass-storage boot entries;
 - GRUB loading and welcome text after a boot-device handoff.
 
-A subsequent user report says the operating system did not boot after going
-into GRUB. The exact stopping point, selected entry and any kernel messages
-are not yet known. The photo shows the SeaBIOS countdown entering “Booting
-from Hard Disk”, then showing GRUB loading/welcome text; SeaBIOS also listed
-separate USB devices and a `Payload [grub2]` entry. This suggests testing the
-explicit GRUB payload or intended USB device separately will distinguish the
-firmware payload path from the disk’s own bootloader. It does not establish
-that GRUB completed initialization or an OS booted. Keyboard operation,
+The user clarifies that the screen remained frozen at the GRUB welcome
+text for several minutes; the OS never appeared. In the photo, SeaBIOS shows
+its countdown proceeding to “Booting from Hard Disk” before the GRUB loading
+and welcome text. This points to a hang during the hard disk's GRUB startup,
+before OS handoff. The photo's SeaBIOS menu separately listed USB devices
+and a `Payload [grub2]` entry; explicitly selecting that payload or a known
+bootable USB device would distinguish the disk bootloader path from the
+firmware's GRUB payload. No kernel messages or OS startup are visible. Keyboard operation,
 all memory, charging, thermals, suspend, docking, audio, USB-C/Thunderbolt
 and GPU behavior are not independently validated. The photo's display
 connection is unknown, so it does not resolve the earlier HDMI result.
