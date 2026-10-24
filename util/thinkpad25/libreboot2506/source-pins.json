@@ -1,0 +1,184 @@
+{
+  "lbmk": "c46a71138c77556b103a4a5c85917d5bb5cc915a",
+  "coreboot_base": "c247f62749b967143e58c33aa0e5e234711a628f",
+  "deguard": "de176a7f20650b272a01efb633931a63128c1647",
+  "submodules": {
+    "fsp": "86c9111639d357e0f369c14248097b119112a71c",
+    "blobs": "a0726508b86dafe490ff9908274eff408298b15d",
+    "vboot": "3f94e2c7ed58c4e67d6e7dc6052ec615dbbb9bb4",
+    "libgfxinit": "17cfc92f402493979783585b6581efbd98c0cf07",
+    "libhwbase": "584629b9f4771b7618951cec57df2ca3af9c6981",
+    "intel-microcode": "8a62de41c011615d749f8e72bb906dddc72e56a8"
+  },
+  "patches": [
+    {
+      "name": "0001-add-c3-and-clockgen-to-apple-macbook21.patch",
+      "sha256": "c90d65d87a0ea61fb5cb0fcafa51a8eff682ad34baf5c135cf06c6ff19ddc830"
+    },
+    {
+      "name": "0002-lenovo-t400-Enable-all-SATA-ports.patch",
+      "sha256": "f8176c77315dc86a0496d7e7e017e79a8df2b96160affa74e7c618edcc349919"
+    },
+    {
+      "name": "0003-lenovo-x230-set-me_state-Disabled-in-cmos.default.patch",
+      "sha256": "2e689a68b450b440ea53f9d3debd086cdf967693d89b233ab68b79083d67e8b4"
+    },
+    {
+      "name": "0004-set-me_state-Disabled-on-all-cmos.default-files.patch",
+      "sha256": "07b710bb7431b80668f521f8f3a3c70e7e5c3eaf2cf1bc43cd373262951de1be"
+    },
+    {
+      "name": "0005-util-ifdtool-add-nuke-flag-all-0xFF-on-region.patch",
+      "sha256": "fb95699f8bd97f2f18182e01bc15420c73ba576c59f34eb489472845ce9fc81c"
+    },
+    {
+      "name": "0006-mb-dell-e6400-Enable-01.0-device-in-devicetree-for-d.patch",
+      "sha256": "df520c5e7191143a827a17501c4fea24b5c3de111b4abd2482ea8489676ad31b"
+    },
+    {
+      "name": "0007-Remove-warning-for-coreboot-images-built-without-a-p.patch",
+      "sha256": "638e307023e697ce3b615afd498acb93fbfba7f408a449d95a64edcd87112ce4"
+    },
+    {
+      "name": "0008-HACK-Disable-coreboot-related-BL31-features.patch",
+      "sha256": "f97bc547243e35ed033db77db77eec27c70e208c882bb036ad4073b52631962c"
+    },
+    {
+      "name": "0009-dell-e6430-use-ME-Soft-Temporary-Disable.patch",
+      "sha256": "603c4d277d5b165a4f7a3fa3400fd164695a1a19f4408db06c145797eda9d769"
+    },
+    {
+      "name": "0010-mb-hp-Add-Compaq-Elite-8300-CMT-port.patch",
+      "sha256": "2a06d9b75fe134d02352ca4e281b6fc809157f46705adf8419e2de553f093522"
+    },
+    {
+      "name": "0011-nb-intel-haswell-make-IOMMU-a-runtime-option.patch",
+      "sha256": "a198eb8fecfcf6f67ca4d12a820ab5c4fed2631af8a0dc8daee99bb938196ba3"
+    },
+    {
+      "name": "0012-dell-optiplex_9020-Disable-IOMMU-by-default.patch",
+      "sha256": "188072c00da0208293af30a69c29dce4baa7cd7eaa54f6759f8ca70def65e306"
+    },
+    {
+      "name": "0013-nb-haswell-Fully-disable-iGPU-when-dGPU-is-used.patch",
+      "sha256": "89d18fbd96c9092dcde3f69b7ca31519523286c8c8e3d0b6b8884e223cbf8aff"
+    },
+    {
+      "name": "0014-ec-dell-mec5035-Add-S3-suspend-SMI-handler.patch",
+      "sha256": "06211efd222402c357d5c213dc0d57c59e7fdccaccd798e57c05879a32b05c87"
+    },
+    {
+      "name": "0015-nb-haswell-lock-policy-regs-when-disabling-IOMMU.patch",
+      "sha256": "63ed361143eae9c8f38f76c539237aebf0a57b586637d4588c588e7f95ce6754"
+    },
+    {
+      "name": "0016-nb-intel-gm45-Make-DDR2-raminit-work.patch",
+      "sha256": "2c30ab20a1f7d0213478d5880cec2790c4a81d00a4a348481c99c48c3dc76539"
+    },
+    {
+      "name": "0017-nb-gm45-Fix-Angel-s-DDR2-RCOMP-fix-on-DDR3-boards.patch",
+      "sha256": "fe4517f1cdfc59865605ad89e7c4792063ff7d6ced81f74e43e5d9b6c914e200"
+    },
+    {
+      "name": "0018-mb-dell-e6400-Use-100-MHz-reference-clock-for-displa.patch",
+      "sha256": "4a0621e4649e72f1e2a12aaf8dd78ab7102461a13ed104183c4e7343512965d9"
+    },
+    {
+      "name": "0019-nb-x4x-define-INTEL_GMA_DPLL_REF_FREQ.patch",
+      "sha256": "25c9bdcd73a8bf5a793ff9ababa636b1a87b6890608980b1b4550e28cad75645"
+    },
+    {
+      "name": "0020-mb-dell-Convert-E6400-into-a-variant.patch",
+      "sha256": "430cca9ebeaa645297b2df8de6d4ced3c52c9fa1b5f7f3d48f122d61f564e95d"
+    },
+    {
+      "name": "0021-mb-dell-gm45_latitudes-Add-E4300-variant.patch",
+      "sha256": "5830369e5268324d841a51fe25969cf9e136a99084d84d2d3e35c672247a5a6e"
+    },
+    {
+      "name": "0022-mb-dell-Add-S3-SMI-handler-for-Dell-Latitudes.patch",
+      "sha256": "a7292bd5dc3e42be2400cb5a83587789cfc9bc893e5ee5a827c06692d6bb3e84"
+    },
+    {
+      "name": "0023-ec-dell-mec5035-Route-power-button-event-to-host.patch",
+      "sha256": "367e2d2379b2dc86a39398c898016821cf97ca4f183a653cdbdb0000deb6cca1"
+    },
+    {
+      "name": "0024-Disable-compression-on-refcode-insertion.patch",
+      "sha256": "e430d10ca25e87fbb005462210bd9cefe6cf89ace0a83cd738034ae269554d19"
+    },
+    {
+      "name": "0025-nb-intel-Disable-stack-overflow-debug-options.patch",
+      "sha256": "2b76663ff6749279bd8a13a3159f0971e1b57f3b72c2475008f8dee863450e0c"
+    },
+    {
+      "name": "0026-soc-intel-skylake-configure-usb-acpi.patch",
+      "sha256": "fd6851c39eb00bbf9a698d2bebb69fbb91b23cb645cd7a07dffec0a3afcc7807"
+    },
+    {
+      "name": "0027-soc-intel-skylake-Enable-4E-4F-PNP-I-O-ports-in-boot.patch",
+      "sha256": "7cd8775422b0b932addc4e21a43d51652c1b15a35f47e392cf53e9e0d699b2e1"
+    },
+    {
+      "name": "0028-mb-lenovo-Add-ThinkPad-T480-and-ThinkPad-T480s.patch",
+      "sha256": "8837add8223e9e86550254de0ac6783ff70d6f640b6976c5bbd52ba1c6670c90"
+    },
+    {
+      "name": "0029-mb-dell-Add-Optiplex-780-MT-x4x-ICH10.patch",
+      "sha256": "f977e7d72b0f59039274f6b57c07adba74514cd8075945d1ee894132d88b656b"
+    },
+    {
+      "name": "0030-mb-dell-optiplex_780-Add-USFF-variant.patch",
+      "sha256": "824d1427ceb642d84ec17cf74bce1d6697afe822c1246d640133636e0634b3ec"
+    },
+    {
+      "name": "0031-dell-3050micro-disable-nvme-hotplug.patch",
+      "sha256": "6288afee786ab335713506a13cc8856f90d56cfe89b0c8a89b346ee83e5cedb1"
+    },
+    {
+      "name": "0032-lenovo-Add-Kconfig-option-CONFIG_LENOVO_TBFW_BIN.patch",
+      "sha256": "a7c51045cb51e7b72daac4fb1b7ea98db7b94d73c176f7a86f7b83cc363bd3de"
+    },
+    {
+      "name": "0033-soc-intel-skylake-Don-t-compress-FSP-S.patch",
+      "sha256": "3c191b14c7bd815836cfe250fae533bbf0b4d0b666ecb8e6ad74b9c09688ecce"
+    },
+    {
+      "name": "0034-soc-intel-pmc-Hardcoded-poweroff-after-power-fail.patch",
+      "sha256": "85e01052074fd13560a36e6c0072e85ce275fd0d79cc08d890634023c95f472f"
+    },
+    {
+      "name": "0035-src-intel-skylake-Disable-stack-overflow-debug-optio.patch",
+      "sha256": "cea7cf0fb96ba7b05309acd97542cb90e294ddbebaba95a4a7519c822b7026a9"
+    },
+    {
+      "name": "0036-src-intel-x4x-Disable-stack-overflow-debug.patch",
+      "sha256": "3775172ac2882ba1124029906a73a1f91e42598846245893ddaac81235f38139"
+    },
+    {
+      "name": "0037-Conditional-TBFW-setting-for-T480-T480S.patch",
+      "sha256": "3df681e592b9bc69c09d2d5aa26525166f3441203f3521db46b6d693929ec642"
+    },
+    {
+      "name": "0038-do-not-break-building-other-thinkpads-with-the-hacks.patch",
+      "sha256": "c80bc6e6521483a8bf8882d796b2c3841aaf854634d0f91786bfbcb4fcf00379"
+    },
+    {
+      "name": "0039-hp-8300cmt-remove-xhci_overcurrent_mapping.patch",
+      "sha256": "3b6e79cf3affd0d2af4a98226b1c5966f8bf1c1a4ef764fd2418858bd398f7fe"
+    },
+    {
+      "name": "0040-Fix-build-with-GCC-15-as-host-compiler.patch",
+      "sha256": "1bf99c2dc15c1f707167a2333b47e9e426dbabb1e9253de154c2f107ace22276"
+    },
+    {
+      "name": "0041-crossgcc-gmp-Add-upstream-fix-for-GCC-15.patch",
+      "sha256": "09385999eabb71d66942912e49cbb5e5b1221f1af6cd075fec4f5ebabfac239c"
+    },
+    {
+      "name": "0042-further-gcc-15-fix-for-compiling-gmp.patch",
+      "sha256": "477ad8891e922f2e41604ec4f650ce9a3a489fbc7946f754c44bc51a2c11ec6c"
+    }
+  ],
+  "toolchain_version": "i386-elf-gcc (coreboot toolchain v2026-09-24_8b0e34f9) 15.2.0"
+}

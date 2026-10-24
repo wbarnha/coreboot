@@ -2,15 +2,18 @@
 
 ## Status
 
-This is a development baseline for the original ThinkPad 25 (20K7).
-No ThinkPad 25 mainboard target, GPIO map, working ROM, or installation
-procedure is implemented by these notes. The existing T470s target is a
-separate board. A T480 or T470s image must not be treated as a ThinkPad 25
-image on the basis of a shared processor family.
+An experimental Libreboot 25.06 T480-derived image has now been built,
+programmed on the original ThinkPad 25 and independently read back with an
+exact match. A user-supplied photo shows SeaBIOS display output, USB boot
+entries and the beginning of a GRUB handoff. OS boot and full hardware
+compatibility remain unverified. An earlier HDMI attempt showed no output;
+the connection used for the later photo has not been established.
 
-The baseline below comes from stock-firmware Linux inventories and exported
-ACPI tables. It is not a full SPI backup or a hardware validation result
-for coreboot.
+See [the experiment report](thinkpad25-libreboot-experiment.md) and
+[the pinned source overlay](../../../util/thinkpad25/libreboot2506/README.md).
+No dedicated supported ThinkPad 25 mainboard target is added to this tree.
+The evidence below distinguishes stock inventory, flash verification and
+observed execution; none alone establishes complete board compatibility.
 
 ## Observed stock configuration
 
@@ -27,7 +30,7 @@ for coreboot.
 | HDA codec | Realtek ALC298, `10ec:0298`, subsystem `17aa:2245` |
 | Vendor BIOS | N1QET94W, version 1.69, dated 2021-11-17 |
 | SMBIOS EC release | 1.36 |
-| SMBIOS ROM size | 16 MB; physical chip identity/capacity unverified |
+| SMBIOS ROM size | 16 MiB W25Q128JV, confirmed externally |
 
 The SMBIOS runtime BIOS size of 128 kB is a different field from ROM size.
 Neither field replaces physical chip identification. The reported EC
@@ -52,8 +55,10 @@ validation result.
 Change 93200 itself is an ACPI charge-behavior test across existing Lenovo
 boards. It does not add a T470 mainboard target or provide the tester's
 board-specific source changes. It should not be cherry-picked as though
-it were a T470 port. The actual T470 source baseline still needs to be
-located and audited before adaptation to ThinkPad 25.
+it were a T470 port. A later firsthand report identifies the unmodified Libreboot 25.06 T480
+build on a seventh-generation T470. This became the experimental baseline;
+it does not establish complete ThinkPad 25 compatibility. See the experiment
+report for the pinned source and the reported peripheral limitations.
 
 ## ACPI evidence
 

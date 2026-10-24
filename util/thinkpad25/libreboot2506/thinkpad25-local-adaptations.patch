@@ -1,0 +1,213 @@
+diff -ruN libreboot-baseline/src/mainboard/lenovo/sklkbl_thinkpad/Kconfig candidate-source/src/mainboard/lenovo/sklkbl_thinkpad/Kconfig
+--- libreboot-baseline/src/mainboard/lenovo/sklkbl_thinkpad/Kconfig	2026-10-24 02:10:01.647894680 +0000
++++ candidate-source/src/mainboard/lenovo/sklkbl_thinkpad/Kconfig	2026-10-24 02:04:00.688698704 +0000
+@@ -46,7 +46,7 @@
+ 	default "T480s" if BOARD_LENOVO_T480S
+ 
+ config CBFS_SIZE
+-	default 0x900000
++	default 0x700000
+ 
+ config DIMM_MAX
+ 	default 2
+diff -ruN libreboot-baseline/src/mainboard/lenovo/sklkbl_thinkpad/Makefile.mk candidate-source/src/mainboard/lenovo/sklkbl_thinkpad/Makefile.mk
+--- libreboot-baseline/src/mainboard/lenovo/sklkbl_thinkpad/Makefile.mk	2026-10-24 02:10:01.648894689 +0000
++++ candidate-source/src/mainboard/lenovo/sklkbl_thinkpad/Makefile.mk	2026-10-24 02:02:59.942163690 +0000
+@@ -71,3 +71,6 @@
+ cbfs-files-$(CONFIG_BOARD_LENOVO_T480S) += spd_20.bin
+ spd_20.bin-file := variants/$(VARIANT_DIR)/spd/spd_20.bin
+ spd_20.bin-type := raw
++
++# Local experimental identity adapter; no identifiers in source.
++ramstage-y += thinkpad25_identity.c
+diff -ruN libreboot-baseline/src/mainboard/lenovo/sklkbl_thinkpad/bootblock.c candidate-source/src/mainboard/lenovo/sklkbl_thinkpad/bootblock.c
+--- libreboot-baseline/src/mainboard/lenovo/sklkbl_thinkpad/bootblock.c	2026-10-24 02:10:01.648894689 +0000
++++ candidate-source/src/mainboard/lenovo/sklkbl_thinkpad/bootblock.c	2026-10-24 02:02:23.966847354 +0000
+@@ -56,5 +56,6 @@
+ 	ec0_write(0x0c, 0x8a);
+ 
+ 	// Setup debug UART
+-	configure_uart(EC_CFG_PORT, UART_PORT, UART_IRQ);
++	if (CONFIG(CONSOLE_SERIAL))
++		configure_uart(EC_CFG_PORT, UART_PORT, UART_IRQ);
+ }
+diff -ruN libreboot-baseline/src/mainboard/lenovo/sklkbl_thinkpad/thinkpad25_identity.c candidate-source/src/mainboard/lenovo/sklkbl_thinkpad/thinkpad25_identity.c
+--- libreboot-baseline/src/mainboard/lenovo/sklkbl_thinkpad/thinkpad25_identity.c	1970-01-01 00:00:00.000000000 +0000
++++ candidate-source/src/mainboard/lenovo/sklkbl_thinkpad/thinkpad25_identity.c	2026-10-24 02:02:57.073138448 +0000
+@@ -0,0 +1,53 @@
++/* SPDX-License-Identifier: GPL-2.0-only */
++/* Experimental ThinkPad 25: retain identities captured from stock SMBIOS. */
++#include <cbfs.h>
++#include <console/console.h>
++#include <smbios.h>
++#include <string.h>
++
++struct identity {
++	char magic[8];
++	u8 uuid[16];
++	char value[10][128];
++};
++
++static const struct identity *get_identity(void)
++{
++	static struct identity data;
++	static bool attempted;
++	static bool valid;
++	if (!attempted) {
++		attempted = true;
++		valid = cbfs_load("thinkpad25/identity", &data, sizeof(data)) == sizeof(data)
++			&& !memcmp(data.magic, "T25ID001", sizeof(data.magic));
++		for (size_t i = 0; valid && i < ARRAY_SIZE(data.value); i++)
++			valid = memchr(data.value[i], 0, sizeof(data.value[i])) != NULL;
++		if (!valid)
++			printk(BIOS_ERR, "ThinkPad 25 identity missing or invalid\n");
++	}
++	return valid ? &data : NULL;
++}
++
++static const char *identity_string(size_t index)
++{
++	const struct identity *data = get_identity();
++	return data ? data->value[index] : "Unknown";
++}
++
++const char *smbios_system_serial_number(void) { return identity_string(0); }
++const char *smbios_mainboard_serial_number(void) { return identity_string(1); }
++const char *smbios_chassis_serial_number(void) { return identity_string(2); }
++const char *smbios_mainboard_asset_tag(void) { return identity_string(3); }
++const char *smbios_system_sku(void) { return identity_string(4); }
++const char *smbios_system_version(void) { return identity_string(5); }
++const char *smbios_mainboard_version(void) { return identity_string(6); }
++const char *smbios_chassis_version(void) { return identity_string(7); }
++const char *smbios_system_product_name(void) { return identity_string(8); }
++const char *smbios_mainboard_product_name(void) { return identity_string(9); }
++
++void smbios_system_set_uuid(u8 *uuid)
++{
++	const struct identity *data = get_identity();
++	if (data)
++		memcpy(uuid, data->uuid, sizeof(data->uuid));
++}
+diff -ruN libreboot-baseline/src/mainboard/lenovo/sklkbl_thinkpad/variants/t480/hda_verb.c candidate-source/src/mainboard/lenovo/sklkbl_thinkpad/variants/t480/hda_verb.c
+--- libreboot-baseline/src/mainboard/lenovo/sklkbl_thinkpad/variants/t480/hda_verb.c	2026-10-24 02:10:01.648894689 +0000
++++ candidate-source/src/mainboard/lenovo/sklkbl_thinkpad/variants/t480/hda_verb.c	2026-10-24 02:02:23.966847354 +0000
+@@ -1,90 +1,25 @@
+ /* SPDX-License-Identifier: GPL-2.0-only */
+-
++/* Generated from ThinkPad 25 stock codec inventory; no vendor coefficients inferred. */
+ #include <device/azalia_device.h>
+-
+ const u32 cim_verb_data[] = {
+-	0x10ec0257, // Vendor/Device ID: Realtek ALC257
+-	0x17aa225d, // Subsystem ID
+-	11,
+-	AZALIA_SUBVENDOR(0, 0x17aa225d),
+-
+-	AZALIA_PIN_CFG(0, 0x12, AZALIA_PIN_DESC(
+-		AZALIA_INTEGRATED,
+-		AZALIA_INTERNAL,
+-		AZALIA_MIC_IN,
+-		AZALIA_OTHER_DIGITAL,
+-		AZALIA_COLOR_UNKNOWN,
+-		AZALIA_NO_JACK_PRESENCE_DETECT,
+-		2, 0
+-	)),
+-	AZALIA_PIN_CFG(0, 0x13, 0x40000000), // does not describe a jack or internal device
+-	AZALIA_PIN_CFG(0, 0x14, AZALIA_PIN_DESC(
+-		AZALIA_INTEGRATED,
+-		AZALIA_INTERNAL,
+-		AZALIA_SPEAKER,
+-		AZALIA_OTHER_ANALOG,
+-		AZALIA_COLOR_UNKNOWN,
+-		AZALIA_NO_JACK_PRESENCE_DETECT,
+-		1, 0
+-	)),
+-	AZALIA_PIN_CFG(0, 0x18, AZALIA_PIN_CFG_NC(0)),
+-	AZALIA_PIN_CFG(0, 0x19, AZALIA_PIN_DESC(
+-		AZALIA_JACK,
+-		AZALIA_EXTERNAL_PRIMARY_CHASSIS | AZALIA_RIGHT,
+-		AZALIA_MIC_IN,
+-		AZALIA_STEREO_MONO_1_8,
+-		AZALIA_BLACK,
+-		AZALIA_JACK_PRESENCE_DETECT,
+-		3, 0
+-	)),
+-	AZALIA_PIN_CFG(0, 0x1a, AZALIA_PIN_CFG_NC(0)),
+-	AZALIA_PIN_CFG(0, 0x1b, AZALIA_PIN_CFG_NC(0)),
+-	AZALIA_PIN_CFG(0, 0x1d, 0x40661b45), // does not describe a jack or internal device
+-	AZALIA_PIN_CFG(0, 0x1e, AZALIA_PIN_CFG_NC(0)),
+-	AZALIA_PIN_CFG(0, 0x21, AZALIA_PIN_DESC(
+-		AZALIA_JACK,
+-		AZALIA_EXTERNAL_PRIMARY_CHASSIS | AZALIA_RIGHT,
+-		AZALIA_HP_OUT,
+-		AZALIA_STEREO_MONO_1_8,
+-		AZALIA_BLACK,
+-		AZALIA_JACK_PRESENCE_DETECT,
+-		1, 15
+-	)),
+-
+-	0x8086280b, // Vendor/Device ID: Intel Kabylake HDMI
+-	0x80860101, // Subsystem ID
+-	4,
++	0x10ec0298, 0x17aa2245, 12,
++	AZALIA_SUBVENDOR(0, 0x17aa2245),
++	AZALIA_PIN_CFG(0, 0x12, 0x90a60140),
++	AZALIA_PIN_CFG(0, 0x13, 0x40000000),
++	AZALIA_PIN_CFG(0, 0x14, 0x90170110),
++	AZALIA_PIN_CFG(0, 0x17, 0x001111f0),
++	AZALIA_PIN_CFG(0, 0x18, 0x03a11030),
++	AZALIA_PIN_CFG(0, 0x19, 0x001111f0),
++	AZALIA_PIN_CFG(0, 0x1a, 0x411111f0),
++	AZALIA_PIN_CFG(0, 0x1d, 0x40648605),
++	AZALIA_PIN_CFG(0, 0x1e, 0x411111f0),
++	AZALIA_PIN_CFG(0, 0x1f, 0x411111f0),
++	AZALIA_PIN_CFG(0, 0x21, 0x03211020),
++	0x8086280b, 0x80860101, 4,
+ 	AZALIA_SUBVENDOR(2, 0x80860101),
+-
+-	AZALIA_PIN_CFG(2, 0x05, AZALIA_PIN_DESC(
+-		AZALIA_JACK,
+-		AZALIA_DIGITAL_DISPLAY,
+-		AZALIA_DIGITAL_OTHER_OUT,
+-		AZALIA_OTHER_DIGITAL,
+-		AZALIA_COLOR_UNKNOWN,
+-		AZALIA_JACK_PRESENCE_DETECT,
+-		1, 0
+-	)),
+-	AZALIA_PIN_CFG(2, 0x06, AZALIA_PIN_DESC(
+-		AZALIA_JACK,
+-		AZALIA_DIGITAL_DISPLAY,
+-		AZALIA_DIGITAL_OTHER_OUT,
+-		AZALIA_OTHER_DIGITAL,
+-		AZALIA_COLOR_UNKNOWN,
+-		AZALIA_JACK_PRESENCE_DETECT,
+-		2, 0
+-	)),
+-	AZALIA_PIN_CFG(2, 0x07, AZALIA_PIN_DESC(
+-		AZALIA_JACK,
+-		AZALIA_DIGITAL_DISPLAY,
+-		AZALIA_DIGITAL_OTHER_OUT,
+-		AZALIA_OTHER_DIGITAL,
+-		AZALIA_COLOR_UNKNOWN,
+-		AZALIA_JACK_PRESENCE_DETECT,
+-		3, 0
+-	)),
++	AZALIA_PIN_CFG(2, 0x05, 0x18560010),
++	AZALIA_PIN_CFG(2, 0x06, 0x18560010),
++	AZALIA_PIN_CFG(2, 0x07, 0x18560010),
+ };
+-
+ const u32 pc_beep_verbs[] = {};
+-
+ AZALIA_ARRAY_SIZES;
+--- libreboot-baseline/src/soc/intel/common/block/cpu/smmrelocate.c	2025-04-20 05:13:57.000000000 +0000
++++ candidate-source/src/soc/intel/common/block/cpu/smmrelocate.c	2026-10-24 02:05:05.749272821 +0000
+@@ -188,7 +188,7 @@
+ 	char *ied_base;
+ 
+ 	struct ied_header ied = {
+-		.signature = "INTEL RSVD",
++		.signature = { 'I', 'N', 'T', 'E', 'L', ' ', 'R', 'S', 'V', 'D' },
+ 		.size = params->ied_size,
+ 		.reserved = {0},
+ 	};
