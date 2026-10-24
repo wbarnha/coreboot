@@ -181,3 +181,22 @@ setup is booting in UEFI or Legacy mode. A successful stock UEFI boot would
 show that the drive and OS work through that UEFI path, but would not by
 itself validate SeaBIOS's legacy boot path. Do not change firmware settings
 just to make the comparison; record the existing mode.
+
+### UEFI boot variables in the restored stock image
+
+Read-only parsing of the active global-variable records in
+`originals/thinkpad25_bios_3.bin` found `BootOrder` (record at file offset
+`0x810850`, state `0x3F`) with this order:
+`0001, 0024, 0000, 0017, 0018, 0019, 001A, 001B, 001C, 001E, 001F`.
+The first entry, active `Boot0001` (record at `0x811E8C`), is “Ubuntu” and
+points to `\EFI\ubuntu\shimx64.efi`. Active `Boot0000` is “Windows Boot
+Manager” and points to `\EFI\Microsoft\Boot\bootmgfw.efi`.
+
+The original dump and both post-restore reads all hash to
+`041c88ad324f5984b0f5c9a88c75ea188e4022b71c5c586b9e6e929dc0248f0c`, so
+these are the UEFI boot variables in the image currently restored. This is
+strong evidence that the saved stock configuration preferred an Ubuntu UEFI
+boot path. It does not prove the OS is still present or that this entry boots
+now; the user has not yet tested stock boot. It does explain why the earlier
+SeaBIOS handoff to the disk's legacy GRUB was not an equivalent test of the
+configured stock UEFI path.
