@@ -24,11 +24,17 @@ okay. A later user-supplied photograph shows:
 The user clarifies that the screen remained frozen at the GRUB welcome
 text for several minutes; the OS never appeared. In the photo, SeaBIOS shows
 its countdown proceeding to “Booting from Hard Disk” before the GRUB loading
-and welcome text. This points to a hang during the hard disk's GRUB startup,
-before OS handoff. The photo's SeaBIOS menu separately listed USB devices
-and a `Payload [grub2]` entry; explicitly selecting that payload or a known
-bootable USB device would distinguish the disk bootloader path from the
-firmware's GRUB payload. No kernel messages or OS startup are visible. Keyboard operation,
+and welcome text. This establishes a hang after SeaBIOS attempted a
+hard-disk-class boot; it does not identify which physical device supplied
+that GRUB. The photo's SeaBIOS menu separately listed three USB mass-storage
+devices and a `Payload [grub2]` entry. The saved hardware inventory from
+2026-10-23, collected while stock BIOS N1QET94W was running, lists a Cruzer
+Glide and SD/MMC device but no internal SATA or NVMe disk. The board's AHCI
+controller was present, with no SATA disk listed. This makes USB storage a
+plausible source for the photographed GRUB, while the later device state is
+unknown. The exact selected device was not recorded. Explicitly selecting
+each known boot device or `Payload [grub2]` would distinguish those paths.
+No kernel messages or OS startup are visible. Keyboard operation,
 all memory, charging, thermals, suspend, docking, audio, USB-C/Thunderbolt
 and GPU behavior are not independently validated. The photo's display
 connection is unknown, so it does not resolve the earlier HDMI result.
@@ -142,11 +148,17 @@ logs are under `logs/thinkpad25-stock-restore-20261024.log` and
 `logs/thinkpad25-stock-restored-readback-{1,2}.txt` in the investigation
 directory.
 
-The next diagnostic is a stock-firmware boot using the same internal drive.
-That result is pending. Keep the earlier Libreboot symptom classified as a
-likely disk-GRUB startup hang because the photographed SeaBIOS countdown went
-to “Booting from Hard Disk” immediately before GRUB text; it does not prove
-that the separate built-in `Payload [grub2]` entry was selected or tested.
+The post-restore stock-firmware boot test is pending. There is a historical
+baseline: the saved inventory identifies this ThinkPad 25 running Linux
+kernel 6.8 while DMI reported Lenovo BIOS `N1QET94W (1.69)` on 2026-10-23.
+Stock firmware had therefore reached a running Linux environment before the
+Libreboot experiment. The inventory lists only USB Cruzer and SD/MMC storage,
+but does not record the root device, the boot entry, or whether the launch was
+UEFI or Legacy. Use the same boot media that was present for the Libreboot
+attempt, if available, and record the exact F12 entry selected. Do not assume
+an internal drive was installed. The photographed SeaBIOS countdown reached
+a hard-disk-class boot and GRUB text, but does not prove which medium was used
+or that the separate built-in `Payload [grub2]` entry was selected or tested.
 
 ### SeaBIOS boot-order artifact comparison
 
@@ -168,12 +180,12 @@ The saved `t480_vfsp_16mb/target.cfg` sets both `payload_seabios="y"` and
 `payload_grub="y"`, plus `grub_scan_disk="nvme ahci"`. CBFS lists
 `fallback/payload` (the SeaBIOS payload) and `img/grub2` as separate entries.
 The `grub_scan_disk` setting describes devices scanned by the built-in GRUB
-payload; it does not configure the SeaBIOS hard-disk boot or the GRUB
-installation on the internal drive. Combined with the photographed
-SeaBIOS-to-hard-disk handoff, this makes a disk bootloader/legacy-boot-path
-hang the best-supported explanation for that particular freeze. The exact
-cause remains unknown because neither the selected entry nor the disk's GRUB
-mode was recorded.
+payload; it does not configure the SeaBIOS hard-disk boot or any GRUB
+installation on attached storage. Combined with the photographed
+SeaBIOS-to-hard-disk handoff, the best-supported explanation is a hang in a
+legacy GRUB boot path on a hard-disk-class device. The inventory makes USB
+storage plausible; the precise device and its GRUB configuration remain
+unknown because neither the selected entry nor the device was recorded.
 
 The user reports the stock-firmware comparison has not yet been performed.
 When it is, record which firmware boot entry was used and whether the stock
@@ -198,17 +210,19 @@ these are the UEFI boot variables in the image currently restored. This is
 strong evidence that the saved stock configuration preferred an Ubuntu UEFI
 boot path. It does not prove the OS is still present or that this entry boots
 now; the user has not yet tested stock boot. It does explain why the earlier
-SeaBIOS handoff to the disk's legacy GRUB was not an equivalent test of the
-configured stock UEFI path.
+SeaBIOS handoff to a hard-disk-class device's GRUB was not an equivalent test
+of the configured stock UEFI path.
 
 The Ubuntu device path's GPT hard-drive node identifies partition 1 at LBA
-2048, size 2,097,152 sectors, PARTUUID
-`a6231196-0aac-44d7-a534-1fda8bb4279f`. The Windows entry instead identifies
-partition 1 at LBA 2048, size 532,480 sectors, PARTUUID
-`8c7c0cd8-815e-4c78-89f6-ff3e2a0c046b`. These are distinct partition
-identifiers; they could represent boot partitions on different drives or
-stale firmware entries. The saved variable data alone cannot distinguish
-those cases. If stock boot does not work, comparing these PARTUUIDs against
-`lsblk -o NAME,MODEL,SIZE,PARTN,PARTUUID,PARTLABEL,FSTYPE,UUID,MOUNTPOINTS`
-from a live environment would show whether the saved Ubuntu target is still
-present.
+2048, size 2,097,152 sectors (1 GiB), PARTUUID
+`a6231196-0aac-44d7-a534-1fda8bb4279f`. The saved inventory lists the
+SanDisk Cruzer's first partition as a 1023 MiB FAT volume, and the same
+Cruzer is visible in the Libreboot boot menu. This size and partition-number
+match makes the Cruzer a plausible target of `Boot0001`, but the inventory
+does not record its PARTUUID or start LBA, so the match is not proven. The
+Windows entry instead identifies partition 1 at LBA 2048, size 532,480
+sectors, PARTUUID `8c7c0cd8-815e-4c78-89f6-ff3e2a0c046b`; it may be on another
+drive or be stale. The saved variable data alone cannot resolve either
+target's current presence. If the Cruzer is available, comparing its
+partition details against `lsblk -o NAME,MODEL,SIZE,PARTN,START,PARTUUID,PARTLABEL,FSTYPE,UUID,MOUNTPOINTS`
+from a live environment can confirm or reject the Ubuntu-entry match.
