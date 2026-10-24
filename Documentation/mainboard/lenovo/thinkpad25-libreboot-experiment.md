@@ -200,3 +200,15 @@ boot path. It does not prove the OS is still present or that this entry boots
 now; the user has not yet tested stock boot. It does explain why the earlier
 SeaBIOS handoff to the disk's legacy GRUB was not an equivalent test of the
 configured stock UEFI path.
+
+The Ubuntu device path's GPT hard-drive node identifies partition 1 at LBA
+2048, size 2,097,152 sectors, PARTUUID
+`a6231196-0aac-44d7-a534-1fda8bb4279f`. The Windows entry instead identifies
+partition 1 at LBA 2048, size 532,480 sectors, PARTUUID
+`8c7c0cd8-815e-4c78-89f6-ff3e2a0c046b`. These are distinct partition
+identifiers; they could represent boot partitions on different drives or
+stale firmware entries. The saved variable data alone cannot distinguish
+those cases. If stock boot does not work, comparing these PARTUUIDs against
+`lsblk -o NAME,MODEL,SIZE,PARTN,PARTUUID,PARTLABEL,FSTYPE,UUID,MOUNTPOINTS`
+from a live environment would show whether the saved Ubuntu target is still
+present.
