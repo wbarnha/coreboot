@@ -114,9 +114,9 @@ CBMEM logs can become available after memory initialization. The next useful
 capture is a booted OS's CBMEM console, PCI, runtime DMI/ACPI and memory-test
 results, with explicit testing of both internal display and HDMI paths.
 
-The programmer has since been moved to the separate failed T480 motherboard.
-That is a different target. Prior ThinkPad 25 identification or write approval
-does not identify or authorize a new operation on the T480.
+At the time this note was first written, the programmer had been moved to the
+separate failed T480 motherboard. It was subsequently reconnected to the
+ThinkPad 25 for the approved stock restore below; that restore is now complete.
 
 ## Firsthand test leads
 
@@ -129,3 +129,55 @@ does not identify or authorize a new operation on the T480.
 No generic flash-ready image, automatic writer, or working/daily-use port
 claim is published here. Any future write needs its own reviewed image,
 physical setup confirmation, exact approval and verified rollback plan.
+
+## Post-restore status
+
+On 2026-10-24, the user approved restoration of
+`thinkpad25_bios_3.bin` (16,777,216 bytes; SHA-256
+`041c88ad324f5984b0f5c9a88c75ea188e4022b71c5c586b9e6e929dc0248f0c`).
+Flashrom identified the Winbond 16 MiB part and reported `VERIFIED`. Two
+separate post-write reads match the image byte-for-byte and have the same
+SHA-256. The original backup files were not modified. The write and readback
+logs are under `logs/thinkpad25-stock-restore-20261024.log` and
+`logs/thinkpad25-stock-restored-readback-{1,2}.txt` in the investigation
+directory.
+
+The next diagnostic is a stock-firmware boot using the same internal drive.
+That result is pending. Keep the earlier Libreboot symptom classified as a
+likely disk-GRUB startup hang because the photographed SeaBIOS countdown went
+to “Booting from Hard Disk” immediately before GRUB text; it does not prove
+that the separate built-in `Payload [grub2]` entry was selected or tested.
+
+### SeaBIOS boot-order artifact comparison
+
+Read-only `cbfstool print` inspection of the saved artifacts confirms that
+the previously installed `thinkpad25-libreboot2506-experimental.rom`
+(SHA-256 `42051825518a236c48165f11c6d226097a557a70b9a5b34fc04816be4bcdc8b9`)
+contains `img/grub2` but no CBFS `bootorder` file. The separate
+`thinkpad25-libreboot2506-grub2-default.rom`
+(SHA-256 `fd96e8a6c68d3894b860ae46081f2b7e01f33c804962eab305802b1b52005738`)
+contains a 15-byte `bootorder` file whose contents are `/rom@img/grub2\n`.
+The two 16 MiB artifacts differ in 58 bytes across four ranges:
+`0x99BD8A–0x99BD8F`, `0x99BD97–0x99BDB2`, `0x99BDC0–0x99BDCB`, and
+`0x99BDD0–0x99BDDB`. This establishes the metadata change in the candidate,
+not that the candidate was flashed or that its built-in GRUB payload works
+on the machine. Therefore, the photographed hard-disk GRUB freeze did not
+test that candidate's default-to-built-in-GRUB behavior.
+
+The saved `t480_vfsp_16mb/target.cfg` sets both `payload_seabios="y"` and
+`payload_grub="y"`, plus `grub_scan_disk="nvme ahci"`. CBFS lists
+`fallback/payload` (the SeaBIOS payload) and `img/grub2` as separate entries.
+The `grub_scan_disk` setting describes devices scanned by the built-in GRUB
+payload; it does not configure the SeaBIOS hard-disk boot or the GRUB
+installation on the internal drive. Combined with the photographed
+SeaBIOS-to-hard-disk handoff, this makes a disk bootloader/legacy-boot-path
+hang the best-supported explanation for that particular freeze. The exact
+cause remains unknown because neither the selected entry nor the disk's GRUB
+mode was recorded.
+
+The user reports the stock-firmware comparison has not yet been performed.
+When it is, record which firmware boot entry was used and whether the stock
+setup is booting in UEFI or Legacy mode. A successful stock UEFI boot would
+show that the drive and OS work through that UEFI path, but would not by
+itself validate SeaBIOS's legacy boot path. Do not change firmware settings
+just to make the comparison; record the existing mode.
