@@ -21,8 +21,13 @@ okay. A later user-supplied photograph shows:
 - USB mass-storage boot entries;
 - GRUB loading and welcome text after a boot-device handoff.
 
-This establishes execution through the payload and display initialization
-on the photographed path, plus USB device enumeration. It does not prove
+A subsequent user report says the operating system did not boot after going
+into GRUB. The exact stopping point, selected entry and any kernel messages
+are not yet known. The photo shows the SeaBIOS countdown entering “Booting
+from Hard Disk”, then showing GRUB loading/welcome text; SeaBIOS also listed
+separate USB devices and a `Payload [grub2]` entry. This suggests testing the
+explicit GRUB payload or intended USB device separately will distinguish the
+firmware payload path from the disk’s own bootloader. It does not establish
 that GRUB completed initialization or an OS booted. Keyboard operation,
 all memory, charging, thermals, suspend, docking, audio, USB-C/Thunderbolt
 and GPU behavior are not independently validated. The photo's display
